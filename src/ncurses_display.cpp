@@ -3,6 +3,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <sstream>
 
 #include "format.h"
 #include "ncurses_display.h"
@@ -14,7 +15,10 @@ using std::to_string;
 // 50 bars uniformly displayed from 0 - 100 %
 // 2% is one bar(|)
 std::string NCursesDisplay::ProgressBar(float percent) {
-  std::string result{"0%"};
+  std::stringstream fixedPercent;
+  fixedPercent.precision(3);
+  fixedPercent << std::fixed << percent * 100.0;
+  std::string result{"%"+ fixedPercent.str()};
   int size{50};
   float bars{percent * size};
 
@@ -48,7 +52,7 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
       window, ++row, 2,
       ("Running Processes: " + to_string(system.RunningProcesses())).c_str());
   mvwprintw(window, ++row, 2,
-            ("Up Time: " + Format::ElapsedTime(system.UpTime())).c_str());
+            ("Up Time: " + Format::ElapsedTime( system.UpTime() )).c_str());
   wrefresh(window);
 }
 
